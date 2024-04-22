@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat with Image</title>
+  <style> 
+   body { font-family: Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 20px; }
+    #container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    h2 {
+    color: #333;
+    text-align: center;
+    }
+    
+    #upload-section {
+    margin-bottom: 20px;
+    }
+    
+    #image-upload {
+    display: block;
+    margin: 0 auto;
+    }
+    
+    #uploaded-image {
+    display: block;
+    max-width: 100%;
+    margin: 20px auto;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    #prompt-input {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    }
+    
+    #submit-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    }
+    
+    #loading-indicator {
+    text-align: center;
+    margin-top: 20px;
+    }
+    
+    #result-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    }
+    
+    #response-text {
+    margin-top: 10px;
+    }
+    </style>
+</head>
+<body>
+  <div id="container">
+    <h2>Chat with Image</h2>
+    <div id="upload-section">
+      <input type="file" id="image-upload" accept="image/*">
+      <br>
+      <img id="uploaded-image" src="" alt="Uploaded Image" style="display: none;">
+      <br>
+      <textarea type="text" id="prompt-input" placeholder="Enter prompt here"></textarea>
+      <br>
+      <button id="submit-button">Submit</button>
+    </div>
+    <div id="loading-indicator">
+      <p>Processing image...</p>
+    </div>
+    <div id="result-section" style="display: none;">
+      <h3>Response:</h3>
+      <p id="response-text"></p>
+    </div>
+  </div>
+  <script>
+    const submitButton = document.getElementById('submit-button');
+    const imageUpload = document.getElementById('image-upload');
+    const uploadedImage = document.getElementById('uploaded-image');
+    const responseText = document.getElementById('response-text');
+    const resultSection = document.getElementById('result-section');
+
+    imageUpload.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          uploadedImage.src = reader.result;
+          uploadedImage.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    submitButton.addEventListener('click', async function () {
+      const imageFile = imageUpload.files[0];
+      const reader = new FileReader();
+      reader.onload = async function () {
+        const arrayBuffer = this.result;
+        const byteArray = new Uint8Array(arrayBuffer);
+        const blob = new Blob([byteArray], { type: imageFile.type });
+        const formData = new FormData();
+        formData.append('image', blob, imageFile.name);
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const prompt = document.getElementById('prompt-input').value;
+        formData.append('prompt', prompt);
+        loadingIndicator.style.display = 'block';
+        try {
+          const response = await fetch('/chat', {
+            method: 'POST',
+            body: formData
+          });
+          if (response.ok) {
+            const data = await response.text();
+            responseText.textContent = data;
+            resultSection.style.display = 'block';
+          } else {
+            console.error('Image processing failed. Status:', response.status, 'Status Text:', response.statusText, 'Response:', response);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+        loadingIndicator.style.display = 'none';
+      }
+      reader.readAsArrayBuffer(imageFile);
+    });
+  </script>
+</body>
+</html>
