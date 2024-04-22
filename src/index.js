@@ -5,7 +5,6 @@ const app = {
 		const prompt = formData.get("prompt");
 		const imageFile = formData.get("image");
 
-		const ai = new Ai(env.AI);
 		const inputs = {
 			prompt: prompt,
 			max_tokens: 2000,
