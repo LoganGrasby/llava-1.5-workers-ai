@@ -123,7 +123,6 @@
         const blob = new Blob([byteArray], { type: imageFile.type });
         const formData = new FormData();
         formData.append('image', blob, imageFile.name);
-        const loadingIndicator = document.getElementById('loading-indicator');
         const prompt = document.getElementById('prompt-input').value;
         formData.append('prompt', prompt);
         loadingIndicator.style.display = 'block';
