@@ -9,7 +9,7 @@ const app = {
 			const inputs = {
 				prompt: prompt,
 				temperature: 0.1,
-				max_tokens: 200,
+				max_tokens: 500,
 			};
 			const modelId = '@cf/llava-hf/llava-1.5-7b-hf';
 			const imageArrayBuffer = await imageFile.arrayBuffer();
