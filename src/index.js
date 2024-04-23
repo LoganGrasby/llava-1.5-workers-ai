@@ -8,12 +8,10 @@ const app = {
 
 			const inputs = {
 				prompt: prompt,
-				max_tokens: 2000,
+				temperature: 0.1,
+				max_tokens: 200,
 			};
 			const modelId = '@cf/llava-hf/llava-1.5-7b-hf';
-			inputs.prompt = `
-			USER: ${prompt}  
-			ASSISTANT:`
 			const imageArrayBuffer = await imageFile.arrayBuffer();
 			inputs.image = [...new Uint8Array(imageArrayBuffer)];
 			const response = await env.AI.run(modelId, inputs);
